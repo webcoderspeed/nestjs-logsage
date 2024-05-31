@@ -1,18 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
 import { AppService } from './app.service';
-import { LoggerService, logExecutionTime } from '../src';
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly loggerService: LoggerService,
-  ) {}
+  constructor(private readonly appService: AppService) {}
+
+  private readonly logger = new Logger(AppController.name);
 
   @Get()
-  @logExecutionTime
   getHello() {
-    this.loggerService.info('Hello from Controller!');
+    this.logger.log('Hello from Controller!', { password: Math.random() });
+    this.logger.warn('Hello from Controller!', { password: Math.random() });
+    this.logger.error('Hello from Controller!', { password: Math.random() });
+    this.logger.debug('Hello from Controller!', { password: Math.random() });
     return this.appService.getWorld();
   }
 }

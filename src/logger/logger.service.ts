@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  Injectable,
+  LoggerService as NestjsLoggerService,
+} from '@nestjs/common';
 import { TraceIdHandler } from '../utils';
 import { ILogger, ILoggerOptions, LoggerType } from '../types';
 import { getLogger } from './logger.factory';
@@ -5,7 +10,8 @@ import { LoggerMiddleware } from '../middlewares';
 import speedCache from '../db';
 import { LOGGER_OPTIONS } from '../constants';
 
-export class LoggerService {
+@Injectable()
+export class LoggerService implements NestjsLoggerService, ILogger {
   private logger: ILogger;
 
   constructor(
@@ -15,6 +21,10 @@ export class LoggerService {
   ) {
     this.logger = getLogger(options);
     speedCache.set(LOGGER_OPTIONS, options);
+  }
+
+  log(message: any, ...optionalParams: any[]) {
+    this.logWithRequestId('info', message, ...optionalParams);
   }
 
   info(...optionalParams: any[]): void {
@@ -27,6 +37,10 @@ export class LoggerService {
 
   error(...optionalParams: any[]): void {
     this.logWithRequestId('error', ...optionalParams);
+  }
+
+  debug(...optionalParams: any[]): void {
+    this.logWithRequestId('debug', ...optionalParams);
   }
 
   private addRequestId(...optionalParams: any[]) {

@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { LoggerService } from '../src';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
   constructor(
-    private readonly loggerService: LoggerService,
   ) {}
+  private readonly logger = new Logger(AppService.name);
+
 
   getWorld() {
-    this.loggerService.info('Hello from AppService!');
+    this.logger.error('Hello from AppService!');
 
     return 'World!';
   }

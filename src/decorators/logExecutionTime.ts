@@ -8,18 +8,21 @@ export function logExecutionTime(
   propertyKey?: string,
   descriptor?: PropertyDescriptor,
 ): any {
-  const options = speedCache.get(LOGGER_OPTIONS);
+  const getLogger = () => {
+    const options = speedCache.get(LOGGER_OPTIONS);
 
-  const logger = new LoggerService(
-    options ?? {
-      type: LoggerType.PINO,
-    },
-  );
+    return new LoggerService(
+      options ?? {
+        type: LoggerType.PINO,
+      },
+    );
+  };
 
   if (propertyKey && descriptor) {
     // Decorator for method
     const originalMethod = descriptor.value;
     descriptor.value = function (...args: any[]) {
+      const logger = getLogger();
       const start = performance.now();
       const result = originalMethod.apply(this, args);
       const end = performance.now();
@@ -35,6 +38,7 @@ export function logExecutionTime(
       if (typeof method === 'function' && key !== 'constructor') {
         const originalMethod = method;
         target.prototype[key] = function (...args: any[]) {
+          const logger = getLogger();
           const start = performance.now();
           const result = originalMethod.apply(this, args);
           const end = performance.now();
